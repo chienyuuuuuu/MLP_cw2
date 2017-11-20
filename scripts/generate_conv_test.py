@@ -1,5 +1,5 @@
 import numpy as np
-from mlp.layers import ConvolutionalLayer, BatchNormalizationLayer
+from mlp.layers import ConvolutionalLayer
 import argparse
 
 parser = argparse.ArgumentParser(description='Welcome to GAN-Shot-Learning script')
@@ -34,30 +34,13 @@ activation_layer.params = [kernels, biases]
 conv_fprop = activation_layer.fprop(test_inputs)
 conv_bprop = activation_layer.bprop(
     test_inputs, conv_fprop, test_grads_wrt_outputs)
-conv_grads_wrt_params = activation_layer.grads_wrt_params(test_inputs, test_grads_wrt_outputs)
+conv_grads_wrt_params = activation_layer.grads_wrt_params(test_inputs,
+                                                          test_grads_wrt_outputs)
 
-test_inputs = np.reshape(test_inputs, newshape=(2, -1))
-test_grads_wrt_outputs = np.arange(-48, 48).reshape((2, -1))
-
-#produce ELU fprop and bprop
-activation_layer = BatchNormalizationLayer(input_dim=48)
-
-beta = np.array(48*[0.3])
-gamma = np.array(48*[0.8])
-
-activation_layer.params = [gamma, beta]
-BN_fprop = activation_layer.fprop(test_inputs)
-BN_bprop = activation_layer.bprop(
-    test_inputs, BN_fprop, test_grads_wrt_outputs)
-BN_grads_wrt_params = activation_layer.grads_wrt_params(
-    test_inputs, test_grads_wrt_outputs)
-
-test_output = "ConvolutionalLayer:\nFprop: {}\nBprop: {}\nGrads_wrt_params: {}\n" \
-              "BatchNormalization:\nFprop: {}\nBprop: {}\nGrads_wrt_params: {}\n"\
-    .format(conv_fprop,
+test_output = "ConvolutionalLayer:\nFprop: {}\nBprop: {}\n" \
+              "Grads_wrt_params: {}\n".format(conv_fprop,
             conv_bprop,
-            conv_grads_wrt_params,
-            BN_fprop, BN_bprop, BN_grads_wrt_params)
+            conv_grads_wrt_params)
 
-with open("{}_test_file.txt".format(student_id), "w+") as out_file:
+with open("{}_conv_test_file.txt".format(student_id), "w+") as out_file:
     out_file.write(test_output)
