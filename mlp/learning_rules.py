@@ -160,3 +160,37 @@ class MomentumLearningRule(GradientDescentLearningRule):
             mom *= self.mom_coeff
             mom -= self.learning_rate * grad
             param += mom
+
+class  RMSPropLearningRule(GradientDescentLearningRule):
+    def __init__(self, learning_rate=1e-3, decay_rate=0.9):
+        
+        super(RMSPropLearningRule, self).__init__(learning_rate)
+        '''assert mom_coeff >= 0. and mom_coeff <= 1., (
+            'mom_coeff should be in the range [0, 1].'
+        )'''
+        self.decay_rate = decay_rate
+  
+
+    def initialise(self, params):
+        
+        super(RMSPropLearningRule, self).initialise(params)
+        self.caches = []
+        for param in self.params:
+            self.caches.append(np.zeros_like(param))
+   
+    
+    def reset(self):
+        
+        for caches in zip(self.caches):
+            cache *= 0.
+   
+
+    def update_params(self, grads_wrt_params):
+        
+         for param, cache, grad in zip(self.params, self.caches, grads_wrt_params):
+            cache *= self.decay_rate
+            cache += (1-decay_rate)*grad**2
+            param += -learning_rate*grad/(np.sqrt(cache)+eps)
+
+        
+    
